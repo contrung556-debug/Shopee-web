@@ -31,7 +31,7 @@
 <div class="container">
     <h2>Shopee Link Fetcher</h2>
     
-    <label for="hideInput">Nhập tên Hide My Email:</label>
+    <label for="hideInput">Nhập tên Email:</label>
     <div class="input-group">
         <input type="text" id="hideInput" placeholder="Ví dụ: thrombo.jive_6i" inputmode="email">
         <span class="domain-suffix">@icloud.com</span>
@@ -47,8 +47,8 @@
 </div>
 
 <script>
-    // ⚠️ ĐIỀN ĐƯỜNG DẪN URL WEB APP GOOGLE CỦA BẠN VÀO GIỮA HAI DẤU NGOẶC KÉP DƯỚI ĐÂY
-    const webAppUrl = "https://google.com";
+    // Đã liên kết thành công đến URL Web App chính thức của bạn
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbysePx3d2ODpzRWdxpz_UFe4_V_paUyGdLlpec_6GZbN6Ahjj_KP_oWEJ7d3KMpBpHi/exec";
 
     async function fetchVerificationLink() {
         const inputVal = document.getElementById("hideInput").value.trim();
@@ -57,7 +57,7 @@
         const resultBox = document.getElementById("resultBox");
         
         if (!inputVal) {
-            alert("Vui lòng nhập tên địa chỉ email ẩn của bạn!");
+            alert("Vui lòng nhập tên địa chỉ email của bạn!");
             return;
         }
         
