@@ -38,7 +38,7 @@
     
     <label for="hideInput">Nhập tên hoặc địa chỉ Email:</label>
     <div class="input-group">
-        <input type="text" id="hideInput" placeholder="Ví dụ: squints_cutlers.5a hoặc squints_cutlers.5a@icloud.com" inputmode="email">
+        <input type="text" id="hideInput" placeholder="Ví dụ: his-95.morsel hoặc his-95.morsel@icloud.com" inputmode="email">
     </div>
     
     <button id="fetchBtn" onclick="fetchVerificationLink()">Lấy Link Xác Thực / OTP</button>
@@ -51,10 +51,10 @@
 </div>
 
 <script>
-    // ĐỒNG BỘ: Đã thay chính xác đường link Web App mới nhất của bạn phục vụ Vercel
-    const webAppUrl = "https://google.com";
+    // ĐỒNG BỘ ĐƯỜNG LINK: Đã điền chính xác URL Web App xử lý dữ liệu JSON thô mới nhất của bạn
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbwA93_KC9nEKQ-wtHHbpkYhar2BSJGRyM3pCYGsraHazZUyL5VZMBLy6TiS2__gHzM/exec";
 
-    function fetchVerificationLink() {
+    async function fetchVerificationLink() {
         let inputVal = document.getElementById("hideInput").value.trim();
         const fetchBtn = document.getElementById("fetchBtn");
         const loadingBox = document.getElementById("loadingBox");
@@ -70,20 +70,16 @@
             inputVal = inputVal.substring(0, inputVal.toLowerCase().lastIndexOf("@icloud.com"));
         }
         
-        // Cập nhật trạng thái hiển thị giao diện khi đang quét dữ liệu
+        // Cập nhật trạng thái hiển thị loading khi bắt đầu gửi lệnh fetch
         fetchBtn.disabled = true;
         loadingBox.style.display = "block";
         resultBox.style.display = "none";
         resultBox.className = "result-box";
         
-        // CƠ CHẾ VƯỢT CORS: Khởi tạo tên hàm Callback JavaScript ngẫu nhiên
-        const callbackName = 'jsonp_' + Math.round(100000 * Math.random());
-        
-        // Tạo hàm toàn cục hứng gói dữ liệu trả về từ máy chủ Google
-        window[callbackName] = function(data) {
-            // Giải phóng bộ nhớ: Xóa thẻ script tạm và xóa hàm callback sau khi hoàn thành nhiệm vụ
-            delete window[callbackName];
-            document.body.removeChild(script);
+        try {
+            // Gửi yêu cầu Fetch trực tiếp đến API Google Apps Script đã cấu hình CORS
+            const response = await fetch(`${webAppUrl}?hide=${encodeURIComponent(inputVal)}`);
+            const data = await response.json();
             
             loadingBox.style.display = "none";
             fetchBtn.disabled = false;
@@ -97,10 +93,10 @@
                     displayTime = new Date(data.thoi_gian_nhan_thu).toLocaleString('vi-VN');
                 }
                 
-                // Khởi tạo và thiết lập các nút chức năng tùy biến theo loại thư gửi về
+                // Cấu hình các nút bấm hành động hiển thị linh động theo gói JSON nhận về
                 let actionButtonsHtml = '';
                 
-                // Nếu nội dung trả về có đường link xác thực hợp lệ
+                // Trường hợp 1: Có đường link xác thực
                 if (data.link_xac_thuc_tai_day && data.link_xac_thuc_tai_day !== "Không có") {
                     actionButtonsHtml += `
                         <a href="${data.link_xac_thuc_tai_day}" target="_blank" class="verify-btn">MỞ LINK</a>
@@ -108,14 +104,14 @@
                     `;
                 }
                 
-                // Nếu nội dung trả về có mã số OTP hợp lệ
+                // Trường hợp 2: Có mã số OTP
                 if (data.otp && data.otp !== "Không có") {
                     actionButtonsHtml += `
                         <button class="copy-otp-btn" onclick="copyToClipboard('${data.otp}', 'Đã copy mã OTP ${data.otp} thành công!')">COPY OTP</button>
                     `;
                 }
                 
-                // Đổ dữ liệu thô sạch vào khung giao diện
+                // Đổ dữ liệu thô sạch vào khung hiển thị HTML
                 resultBox.innerHTML = `
                     <div class="data-item"><span class="data-label">Email quét:</span> ${data.hide_email_tin}</div>
                     <div class="data-item"><span class="data-label">Mã OTP:</span> <span style="color:#ee4d2d; font-weight:bold; font-size:18px;">${data.otp}</span></div>
@@ -133,28 +129,18 @@
                     <div class="data-item" style="color:#e74c3c; font-weight:bold; text-align:center; margin-bottom:0;">${data.message}</div>
                 `;
             }
-        };
-        
-        // Thực thi cơ chế vượt CORS bằng cách tạo thẻ script động nhúng link API
-        const script = document.createElement('script');
-        script.src = `${webAppUrl}?hide=${encodeURIComponent(inputVal)}&callback=${callbackName}`;
-        
-        // Hàm bẫy lỗi đường truyền vật lý hoặc sai link kết nối
-        script.onerror = function() {
-            delete window[callbackName];
-            document.body.removeChild(script);
+            
+        } catch (error) {
             loadingBox.style.display = "none";
             fetchBtn.disabled = false;
             resultBox.style.display = "block";
             resultBox.classList.add("status-error");
             resultBox.innerHTML = `
                 <div class="data-item" style="color:#e74c3c; font-weight:bold; text-align:center; margin-bottom:0;">
-                    Lỗi kết nối máy chủ! Hãy chắc chắn bạn đã triển khai phiên bản code mới nhất (New Deploy) trên Google Apps Script.
+                    Lỗi kết nối máy chủ! Vui lòng kiểm tra lại cấu hình phiên bản Google Web App.
                 </div>
             `;
-        };
-        
-        document.body.appendChild(script);
+        }
     }
 
     function copyToClipboard(text, successMessage) {
