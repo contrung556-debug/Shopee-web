@@ -22,11 +22,13 @@
         .data-item { margin-bottom: 12px; font-size: 15px; word-break: break-all; color: #444; }
         .data-label { font-weight: bold; color: #666; }
         
-        .action-buttons { display: flex; gap: 10px; margin-top: 15px; }
-        .verify-btn { flex: 2; display: block; text-align: center; padding: 12px; background-color: #2ecc71; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-sizing: border-box; -webkit-appearance: none; }
+        .action-buttons { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .verify-btn { flex: 2; display: block; text-align: center; padding: 12px; background-color: #2ecc71; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-sizing: border-box; -webkit-appearance: none; min-width: 120px; }
         .verify-btn:active { background-color: #27ae60; }
-        .copy-btn { flex: 1; padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; -webkit-appearance: none; }
+        .copy-btn { flex: 1; padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; -webkit-appearance: none; min-width: 100px; }
         .copy-btn:active { background-color: #2980b9; }
+        .copy-otp-btn { flex: 1; padding: 12px; background-color: #e67e22; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; -webkit-appearance: none; min-width: 100px; }
+        .copy-otp-btn:active { background-color: #d35400; }
     </style>
 </head>
 <body>
@@ -36,10 +38,10 @@
     
     <label for="hideInput">Nhập tên hoặc địa chỉ Email:</label>
     <div class="input-group">
-        <input type="text" id="hideInput" placeholder="Ví dụ: thrombo.jive_6i hoặc thrombo.jive_6i@icloud.com" inputmode="email">
+        <input type="text" id="hideInput" placeholder="Ví dụ: squints_cutlers.5a hoặc squints_cutlers.5a@icloud.com" inputmode="email">
     </div>
     
-    <button id="fetchBtn" onclick="fetchVerificationLink()">Lấy Link Xác Thực</button>
+    <button id="fetchBtn" onclick="fetchVerificationLink()">Lấy Link Xác Thực / OTP</button>
     
     <div id="loadingBox" class="result-box status-loading">Đang kết nối hộp thư và quét dữ liệu, vui lòng đợi...</div>
     
@@ -49,8 +51,8 @@
 </div>
 
 <script>
-    // Đã cập nhật URL Web App mới nhất bạn vừa gửi
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbx6yoMPtGcCXKsQSE0WH-Z4aXpXKKCe5L7Kgrg-22Q3keV1vmEByyAgRCbY5wKtzUjvqg/exec";
+    // ĐỒNG BỘ: Đã cập nhật đúng URL Web App Apps Script mới nhất của bạn
+    const webAppUrl = "https://google.com";
 
     async function fetchVerificationLink() {
         let inputVal = document.getElementById("hideInput").value.trim();
@@ -63,7 +65,7 @@
             return;
         }
         
-        // Tự động loại bỏ phần @icloud.com nếu người dùng nhập vào
+        // Tự động loại bỏ phần @icloud.com nếu người dùng nhập thừa vào ô input
         if (inputVal.toLowerCase().endsWith("@icloud.com")) {
             inputVal = inputVal.substring(0, inputVal.toLowerCase().lastIndexOf("@icloud.com"));
         }
@@ -85,8 +87,26 @@
                 resultBox.classList.add("status-success");
                 
                 let displayTime = data.thoi_gian_nhan_thu;
-                if(data.thoi_gian_nhan_thu.indexOf('T') !== -1) {
+                if(data.thoi_gian_nhan_thu && data.thoi_gian_nhan_thu.indexOf('T') !== -1) {
                     displayTime = new Date(data.thoi_gian_nhan_thu).toLocaleString('vi-VN');
+                }
+                
+                // Chuẩn bị các nút bấm hành động linh hoạt theo dữ liệu trả về
+                let actionButtonsHtml = '';
+                
+                // Nếu có link xác thực hợp lệ gửi về
+                if (data.link_xac_thuc_tai_day && data.link_xac_thuc_tai_day !== "Không có") {
+                    actionButtonsHtml += `
+                        <a href="${data.link_xac_thuc_tai_day}" target="_blank" class="verify-btn">MỞ LINK</a>
+                        <button class="copy-btn" onclick="copyToClipboard('${data.link_xac_thuc_tai_day}', 'Đã copy link xác thực thành công!')">COPY LINK</button>
+                    `;
+                }
+                
+                // Nếu có mã OTP số gửi về
+                if (data.otp && data.otp !== "Không có") {
+                    actionButtonsHtml += `
+                        <button class="copy-otp-btn" onclick="copyToClipboard('${data.otp}', 'Đã copy mã OTP ${data.otp} thành công!')">COPY OTP</button>
+                    `;
                 }
                 
                 resultBox.innerHTML = `
@@ -97,8 +117,7 @@
                     <div style="font-size:12px; color:#666; margin-bottom:10px; max-height:60px; overflow-y:auto; background:#eee; padding:8px; border-radius:6px; word-break:break-all;">${data.link_xac_thuc_tai_day}</div>
                     
                     <div class="action-buttons">
-                        <a href="${data.link_xac_thuc_tai_day}" target="_blank" class="verify-btn">MỞ LINK</a>
-                        <button class="copy-btn" onclick="copyToClipboard('${data.link_xac_thuc_tai_day}')">COPY LINK</button>
+                        ${actionButtonsHtml}
                     </div>
                 `;
             } else {
@@ -115,13 +134,13 @@
             resultBox.classList.add("status-error");
             resultBox.innerHTML = `
                 <div class="data-item" style="color:#e74c3c; font-weight:bold; text-align:center; margin-bottom:0;">
-                    Lỗi kết nối! Kiểm tra lại cấu hình quyền 'Anyone' của Google Web App.
+                    Lỗi kết nối! Kiểm tra lại cấu hình phiên bản hoặc quyền 'Anyone' của Google Web App.
                 </div>
             `;
         }
     }
 
-    function copyToClipboard(text) {
+    function copyToClipboard(text, successMessage) {
         const tempInput = document.createElement("input");
         tempInput.value = text;
         document.body.appendChild(tempInput);
@@ -129,7 +148,7 @@
         tempInput.setSelectionRange(0, 99999);
         document.execCommand("copy");
         document.body.removeChild(tempInput);
-        alert("Đã copy link xác thực thành công!");
+        alert(successMessage);
     }
 </script>
 
