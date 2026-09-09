@@ -5,30 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Lấy Link Xác Thực Shopee</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f6f6f6; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 90vh; }
-        .container { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; box-sizing: border-box; }
-        h2 { color: #ee4d2d; text-align: center; margin-top: 0; font-size: 22px; margin-bottom: 20px; }
-        label { font-weight: 600; display: block; margin-bottom: 8px; color: #333; font-size: 15px; }
-        .input-group { position: relative; margin-bottom: 20px; display: flex; align-items: center; }
-        input[type="text"] { width: 100%; padding: 14px; border: 1.5px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: border 0.3s; -webkit-appearance: none; }
-        input[type="text"]:focus { border-color: #ee4d2d; outline: none; }
-        button { width: 100%; padding: 14px; background-color: #ee4d2d; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; -webkit-appearance: none; }
-        button:active { background-color: #d73c1f; }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
-        .result-box { margin-top: 25px; padding: 15px; border-radius: 8px; background-color: #fafafa; border: 1px solid #e6e6e6; display: none; box-sizing: border-box; }
-        .status-success { border-left: 5px solid #2ecc71; }
-        .status-error { border-left: 5px solid #e74c3c; }
-        .status-loading { border-left: 5px solid #3498db; text-align: center; color: #666; font-weight: 500; }
-        .data-item { margin-bottom: 12px; font-size: 15px; word-break: break-all; color: #444; }
-        .data-label { font-weight: bold; color: #666; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0; 
+            padding: 15px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 95vh; 
+        }
+        .container { 
+            background: white; 
+            padding: 30px 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06), 0 1px 8px rgba(0,0,0,0.04); 
+            width: 100%; 
+            max-width: 450px; 
+            box-sizing: border-box; 
+            transition: all 0.3s ease;
+        }
+        .container:hover {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        h2 { 
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center; 
+            margin-top: 0; 
+            font-size: 24px; 
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 25px; 
+        }
+        label { 
+            font-weight: 600; 
+            display: block; 
+            margin-bottom: 10px; 
+            color: #4a5568; 
+            font-size: 14px; 
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .input-group { 
+            position: relative; 
+            margin-bottom: 22px; 
+            display: flex; 
+            align-items: center; 
+        }
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: #a0aec0;
+            font-size: 18px;
+            pointer-events: none;
+        }
+        input[type="text"] { 
+            width: 100%; 
+            padding: 15px 15px 15px 42px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            color: #2d3748;
+            background-color: #f7fafc;
+            transition: all 0.3s ease; 
+            -webkit-appearance: none; 
+        }
+        input[type="text"]:focus { 
+            border-color: #ff4b2b; 
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(255, 75, 43, 0.15);
+            outline: none; 
+        }
+        button { 
+            width: 100%; 
+            padding: 16px; 
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
+            transition: all 0.3s ease; 
+            -webkit-appearance: none; 
+        }
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.4);
+        }
+        button:active { 
+            transform: translateY(1px);
+            background: linear-gradient(to right, #e63956, #e64327); 
+        }
+        button:disabled { 
+            background: #cbd5e0; 
+            box-shadow: none;
+            cursor: not-allowed; 
+            transform: none;
+        }
+        .result-box { 
+            margin-top: 25px; 
+            padding: 18px; 
+            border-radius: 12px; 
+            background-color: #fff; 
+            border: 1px solid #e2e8f0; 
+            display: none; 
+            box-sizing: border-box; 
+            animation: fadeIn 0.4s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .status-success { border: 2px solid #2ecc71; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.15); }
+        .status-error { border: 2px solid #e74c3c; box-shadow: 0 4px 12px rgba(231, 76, 60, 0.15); }
+        .status-loading { border: 2px solid #3498db; box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15); text-align: center; color: #4a5568; font-weight: 600; background: #f7fafc; }
+        .data-item { margin-bottom: 14px; font-size: 15px; word-break: break-all; color: #4a5568; display: flex; flex-direction: column; gap: 4px; }
+        .data-label { font-weight: 700; color: #718096; font-size: 13px; text-transform: uppercase; }
+        .data-value-highlight { color: #ee4d2d; font-weight: 800; font-size: 22px; background: #fff5f5; padding: 4px 10px; border-radius: 6px; display: inline-block; width: fit-content; border: 1px dashed #feb2b2; }
         
-        .action-buttons { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        .verify-btn { flex: 2; display: block; text-align: center; padding: 12px; background-color: #2ecc71; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-sizing: border-box; -webkit-appearance: none; min-width: 120px; }
-        .verify-btn:active { background-color: #27ae60; }
-        .copy-btn { flex: 1; padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; -webkit-appearance: none; min-width: 100px; }
-        .copy-btn:active { background-color: #2980b9; }
-        .copy-otp-btn { flex: 1; padding: 12px; background-color: #e67e22; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; -webkit-appearance: none; min-width: 100px; }
-        .copy-otp-btn:active { background-color: #d35400; }
+        .action-buttons { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+        .verify-btn { flex: 2; display: flex; align-items: center; justify-content: center; padding: 14px; background: linear-gradient(to right, #11998e, #38ef7d); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(56, 239, 125, 0.3); transition: all 0.2s ease; box-sizing: border-box; -webkit-appearance: none; min-width: 120px; }
+        .verify-btn:hover { box-shadow: 0 6px 15px rgba(56, 239, 125, 0.4); transform: translateY(-1px); }
+        .copy-btn { flex: 1; padding: 14px; background: linear-gradient(to right, #2193b0, #6dd5ed); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(109, 213, 237, 0.3); transition: all 0.2s ease; -webkit-appearance: none; min-width: 100px; }
+        .copy-btn:hover { box-shadow: 0 6px 15px rgba(109, 213, 237, 0.4); transform: translateY(-1px); }
+        .copy-otp-btn { flex: 1; padding: 14px; background: linear-gradient(to right, #f857a6, #ff5858); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 88, 88, 0.3); transition: all 0.2s ease; -webkit-appearance: none; min-width: 100px; }
+        .copy-otp-btn:hover { box-shadow: 0 6px 15px rgba(255, 88, 88, 0.4); transform: translateY(-1px); }
     </style>
 </head>
 <body>
@@ -38,7 +144,8 @@
     
     <label for="hideInput">Nhập tên hoặc địa chỉ Email:</label>
     <div class="input-group">
-        <input type="text" id="hideInput" placeholder="Ví dụ: his-95.morsel hoặc his-95.morsel@icloud.com" inputmode="email">
+        <span class="input-icon">✉️</span>
+        <input type="text" id="hideInput" placeholder="Ví dụ: his-95.morsel hoặc his-95.morsel@" inputmode="email">
     </div>
     
     <button id="fetchBtn" onclick="fetchVerificationLink()">Lấy Link Xác Thực / OTP</button>
@@ -52,7 +159,7 @@
 
 <script>
     // ĐỒNG BỘ ĐƯỜNG LINK: Đã điền chính xác URL Web App xử lý dữ liệu JSON thô mới nhất của bạn
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbwA93_KC9nEKQ-wtHHbpkYhar2BSJGRyM3pCYGsraHazZUyL5VZMBLy6TiS2__gHzM/exec";
+    const webAppUrl = "https://google.com";
 
     async function fetchVerificationLink() {
         let inputVal = document.getElementById("hideInput").value.trim();
@@ -65,19 +172,16 @@
             return;
         }
         
-        // Tự động loại bỏ phần đuôi @icloud.com nếu người dùng nhập thừa
         if (inputVal.toLowerCase().endsWith("@icloud.com")) {
             inputVal = inputVal.substring(0, inputVal.toLowerCase().lastIndexOf("@icloud.com"));
         }
         
-        // Cập nhật trạng thái hiển thị loading khi bắt đầu gửi lệnh fetch
         fetchBtn.disabled = true;
         loadingBox.style.display = "block";
         resultBox.style.display = "none";
         resultBox.className = "result-box";
         
         try {
-            // Gửi yêu cầu Fetch trực tiếp đến API Google Apps Script đã cấu hình CORS
             const response = await fetch(`${webAppUrl}?hide=${encodeURIComponent(inputVal)}`);
             const data = await response.json();
             
@@ -93,10 +197,8 @@
                     displayTime = new Date(data.thoi_gian_nhan_thu).toLocaleString('vi-VN');
                 }
                 
-                // Cấu hình các nút bấm hành động hiển thị linh động theo gói JSON nhận về
                 let actionButtonsHtml = '';
                 
-                // Trường hợp 1: Có đường link xác thực
                 if (data.link_xac_thuc_tai_day && data.link_xac_thuc_tai_day !== "Không có") {
                     actionButtonsHtml += `
                         <a href="${data.link_xac_thuc_tai_day}" target="_blank" class="verify-btn">MỞ LINK</a>
@@ -104,56 +206,12 @@
                     `;
                 }
                 
-                // Trường hợp 2: Có mã số OTP
                 if (data.otp && data.otp !== "Không có") {
                     actionButtonsHtml += `
                         <button class="copy-otp-btn" onclick="copyToClipboard('${data.otp}', 'Đã copy mã OTP ${data.otp} thành công!')">COPY OTP</button>
                     `;
                 }
                 
-                // Đổ dữ liệu thô sạch vào khung hiển thị HTML
                 resultBox.innerHTML = `
-                    <div class="data-item"><span class="data-label">Email quét:</span> ${data.hide_email_tin}</div>
-                    <div class="data-item"><span class="data-label">Mã OTP:</span> <span style="color:#ee4d2d; font-weight:bold; font-size:18px;">${data.otp}</span></div>
-                    <div class="data-item"><span class="data-label">Thời gian nhận thư:</span> <span style="color:#d35400; font-weight:bold;">${displayTime}</span></div>
-                    <div class="data-item"><span class="data-label">Đường dẫn xác thực:</span></div>
-                    <div style="font-size:12px; color:#666; margin-bottom:10px; max-height:60px; overflow-y:auto; background:#eee; padding:8px; border-radius:6px; word-break:break-all;">${data.link_xac_thuc_tai_day}</div>
-                    
-                    <div class="action-buttons">
-                        ${actionButtonsHtml}
-                    </div>
-                `;
-            } else {
-                resultBox.classList.add("status-error");
-                resultBox.innerHTML = `
-                    <div class="data-item" style="color:#e74c3c; font-weight:bold; text-align:center; margin-bottom:0;">${data.message}</div>
-                `;
-            }
-            
-        } catch (error) {
-            loadingBox.style.display = "none";
-            fetchBtn.disabled = false;
-            resultBox.style.display = "block";
-            resultBox.classList.add("status-error");
-            resultBox.innerHTML = `
-                <div class="data-item" style="color:#e74c3c; font-weight:bold; text-align:center; margin-bottom:0;">
-                    Lỗi kết nối máy chủ! Vui lòng kiểm tra lại cấu hình phiên bản Google Web App.
-                </div>
-            `;
-        }
-    }
-
-    function copyToClipboard(text, successMessage) {
-        const tempInput = document.createElement("input");
-        tempInput.value = text;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        tempInput.setSelectionRange(0, 99999);
-        document.execCommand("copy");
-        document.body.removeChild(tempInput);
-        alert(successMessage);
-    }
-</script>
-
-</body>
-</html>
+                    <div class="data-item"><span class="data-label">Email quét</span><span style="color:#2d3748; font-weight:600;">${data.hide_email_tin}</span></div>
+                    <div class="data-item"><span class="data-label">Mã OTP</span><div><span class="data-value-highlight">${data.otp}</span></div></div>
