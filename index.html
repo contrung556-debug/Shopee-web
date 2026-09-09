@@ -49,8 +49,8 @@
 </div>
 
 <script>
-    // ĐÃ CẬP NHẬT CHÍNH XÁC LINK WEB APP MỚI CỦA BẠN
-    const webAppUrl = "https://google.com";
+    // Đã cập nhật URL Web App mới nhất bạn vừa gửi
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbx6yoMPtGcCXKsQSE0WH-Z4aXpXKKCe5L7Kgrg-22Q3keV1vmEByyAgRCbY5wKtzUjvqg/exec";
 
     async function fetchVerificationLink() {
         let inputVal = document.getElementById("hideInput").value.trim();
@@ -63,7 +63,7 @@
             return;
         }
         
-        // CHUẨN HÓA DỮ LIỆU: Tự động loại bỏ phần @icloud.com nếu người dùng nhập vào
+        // Tự động loại bỏ phần @icloud.com nếu người dùng nhập vào
         if (inputVal.toLowerCase().endsWith("@icloud.com")) {
             inputVal = inputVal.substring(0, inputVal.toLowerCase().lastIndexOf("@icloud.com"));
         }
@@ -74,7 +74,6 @@
         resultBox.className = "result-box";
         
         try {
-            // Gửi request chứa tham số tên email đã làm sạch lên Google Script
             const response = await fetch(`${webAppUrl}?hide=${encodeURIComponent(inputVal)}`);
             const data = await response.json();
             
